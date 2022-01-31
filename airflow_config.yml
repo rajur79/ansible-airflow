@@ -1,0 +1,99 @@
+- name: Comment out Airflow base log 
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^base_log_folder'
+    replace: '#base_log_folder'
+- name: Configure Airflow base log
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: base_log_folder = {{ log_base }}
+- name: Comment out Airflow dag_processor_manager_log_location
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^dag_processor_manager_log_location'
+    replace: '#dag_processor_manager_log_location'
+- name: Configure Airflow dag_processor_manager_log_location
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: dag_processor_manager_log_location = {{ log_base }}/dag_processor_manager/dag_processor_manager.log
+- name: Comment out Airflow child_process_log_directory
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^child_process_log_directory'
+    replace: '#child_process_log_directory'
+- name: Configure Airflow child_process_log_directory
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: child_process_log_directory = {{ log_base }}/scheduler
+- name: Comment out Airflow dags_folder
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^dags_folder'
+    replace: '#dags_folder'
+- name: Configure Airflow dags_folder
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: dags_folder = {{ dags_folder }}
+- name: Comment out Airflow plugins_folder
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^plugins_folder'
+    replace: '#plugins_folder'
+- name: Configure Airflow plugins_folder
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: plugins_folder = {{ plugins_folder }}
+- name: Comment out Airflow sql_alchemy_conn
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^sql_alchemy_conn'
+    replace: '#sql_alchemy_conn'
+- name: Configure Airflow sql_alchemy_conn
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: sql_alchemy_conn = postgresql+psycopg2://{{ db_user }}:{{ db_pass }}@{{ db_host }}:5432/{{ db_name }}
+- name: Comment out Airflow result_backend
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^result_backend'
+    replace: '#result_backend'
+- name: Configure Airflow result_backend
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: result_backend = db+postgresql://{{ db_user }}:{{ db_pass }}@{{ db_host }}:5432/{{ db_name }}
+- name: Comment out Airflow executor
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^executor'
+    replace: '#executor'
+- name: Configure Airflow executor
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: executor = CeleryExecutor
+- name: Comment out Airflow broker_url
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^broker_url'
+    replace: '#broker_url'
+- name: Configure Airflow broker_url
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: broker_url = {{ broker_url }}
+- name: Comment out Airflow fernet_key
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^fernet_key'
+    replace: '#fernet_key'
+- name: Configure Airflow fernet_key
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: fernet_key = {{ fernet_key }}
+- name: Comment out Airflow secret_key
+  replace:
+    dest: '{{ airflow_config }}'
+    regexp: '^secret_key'
+    replace: '#secret_key'
+- name: Configure Airflow secret_key
+  lineinfile:
+    path: '{{ airflow_config }}'
+    line: secret_key = {{ secret_key }}

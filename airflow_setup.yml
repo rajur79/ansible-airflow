@@ -1,0 +1,38 @@
+---
+- hosts: airflow_hosts
+  vars:
+    repl_user: replusr
+    airflow_user: airflow
+    airflow_home: /opt/airflow
+    airflow_app_home: /opt/airflow
+    fernet_key: "{{ lookup('env', 'FERNET_KEY') }}"
+    secret_key: "{{ lookup('env', 'SECRET_KEY') }}"
+    db_name: airflow_db
+    db_user: airflow
+    db_pass: "{{ lookup('env', 'DB_PASS') }}"
+    db_host: airflow2
+    db_init: true
+    broker_url: redis://airflow2:6379/0 
+    log_base : /var/log/airflow    
+    airflow_pip_executable: "pip3"
+    airflow_python_version:
+    airflow_version: 2.2.3
+    airflow_packages: apache-airflow[celery,redis,postgres,crypto,jdbc]
+    airflow_config: /etc/airflow/airflow.cfg
+    dags_folder: /opt/airflow/dags
+    plugins_folder: /opt/airflow/plugins
+  remote_user: root
+  become: True
+  tasks:
+  - name: Execute prerequisites on all hosts
+    import_tasks: airflow_prerequisites.yml
+    when: inventory_hostname in groups['airflow_hosts']
+  - name: Install Airflow on all hosts
+    import_tasks: airflow_install.yml
+    when: inventory_hostname in groups['airflow_hosts']   
+  - name: Configure Airflow on all hosts
+    import_tasks: airflow_config.yml
+    when: inventory_hostname in groups['airflow_hosts'] 
+  - name: Setup Airflow Service on all hosts
+    import_tasks: airflow_service.yml
+    when: inventory_hostname in groups['airflow_hosts']

@@ -1,0 +1,10 @@
+- name: Initialize Airflow DB
+  become: true
+  become_user: "{{ airflow_user }}"
+  command: "{{ airflow_app_home }}/bin/airflow db init"
+  when: db_init
+- name: Upgrade Airflow DB
+  become: true
+  become_user: "{{ airflow_user }}"
+  command: "{{ airflow_app_home }}/bin/airflow db upgrade"
+  when: db_init

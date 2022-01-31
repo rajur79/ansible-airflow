@@ -1,0 +1,68 @@
+- name: Airflow | Install virtualenv
+  pip:
+    executable: "{{ airflow_pip_executable }}"
+    name: virtualenv
+- name: Airflow | Check if exists virtualenv
+  stat:
+    path: "{{ airflow_app_home }}/pyvenv.cfg"
+  register: virtualenv_check
+- name: Airflow | Set a virtualenv
+  become: true
+  become_user: "{{ airflow_user }}"
+  command: "python3 -m venv {{ airflow_app_home }}"
+  when: not virtualenv_check.stat.exists
+- name: Airflow | upgrade pip
+  command: "python3 -m pip install --upgrade pip setuptools wheel"
+- name: Airflow | Installing proper Celery version
+  become: true
+  become_user: "{{ airflow_user }}"
+  pip:
+    name: celery
+    virtualenv: "{{ airflow_app_home }}"
+    virtualenv_python: "python{{ airflow_python_version | default(omit) }}"
+  when:
+    - airflow_version is version( '2.0.0', '<')
+- name: Airflow | Install PostgreSQL psycopg2 package
+  become: true
+  become_user: "{{ airflow_user }}"
+  pip:
+    name: psycopg2
+    virtualenv: "{{ airflow_app_home }}"
+    virtualenv_python: "python{{ airflow_python_version | default(omit) }}"
+- name: Airflow | Install PostgreSQL psycopg2-binary package
+  become: true
+  become_user: "{{ airflow_user }}"
+  pip:
+    name: psycopg2-binary
+    virtualenv: "{{ airflow_app_home }}"
+    virtualenv_python: "python{{ airflow_python_version | default(omit) }}"
+- name: Airflow | Install Redis package
+  become: true
+  become_user: "{{ airflow_user }}"
+  pip:
+    name: redis
+    virtualenv: "{{ airflow_app_home }}"
+    virtualenv_python: "python{{ airflow_python_version | default(omit) }}"
+- name: Airflow | Installing Airflow
+  become: true
+  become_user: "{{ airflow_user }}"
+  pip:
+    name: "{{ airflow_packages }}"
+    version: "{{ airflow_version }}"
+    state: present
+    virtualenv: "{{ airflow_app_home }}"
+    virtualenv_python: "python{{ airflow_python_version | default(omit) }}"
+    extra_args: --no-cache-dir
+  register: airflow_install
+  environment:
+    SLUGIFY_USES_TEXT_UNIDECODE: "yes"  
+- name: check if airflow.cfg file exists
+  stat: 
+    path: /etc/airflow/airflow.cfg
+  register: airflow_cfg_exists    
+- name: Restart Airflow webserver
+  become: true
+  become_user: "{{ airflow_user }}"
+  command: "{{ airflow_app_home }}/bin/airflow webserver"
+  when: airflow_cfg_exists.stat.exists == False
+      

@@ -1,0 +1,19 @@
+---
+- name: Install Airflow dependencies
+  yum:
+    name:
+    - python36
+    - python36-numpy 
+    - /root/ansible-airflow/python3-devel-3.6.8-18.el7.x86_64.rpm
+    - python36-scipy 
+    - python36-pip
+    - python3-virtualenv
+    - python-pip
+    state: present
+- name: Configure Airflow Home
+  lineinfile:
+    path: /etc/profile
+    line: export AIRFLOW_HOME='{{ airflow_home }}'
+- name: Reload profile
+  shell: "source /etc/profile; echo $AIRFLOW_HOME"
+  
